@@ -1,0 +1,117 @@
+%% ===============================================================================================
+%% @author Edwin Fabian Vesga Escobar (vesga.e@javeriana.edu.co)
+%% ===============================================================================================
+
+\documentclass[letter]{article}
+\usepackage[spanish]{babel}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx, color}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{mathrsfs}
+
+% Some definitions
+\floatname{algorithm}{Algoritmo}
+
+% Author info
+\title{Talle 2.1 - Notación Binaria Inversa}
+\author{Edwin Fabian Vesga Escobar$^1$}
+\date{
+	$^1$Departamento de Ingeniería de Sistemas, Pontificia Universidad Javeriana\\Bogotá,  Colombia \\
+	\texttt{vesga.e@javeriana.edu.co}\\~\\
+	\today
+}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introducción} \label{intro}
+\justify Los algoritmos "divide y vencerás" se basan en la idea de reducir un problema a subproblemas, siendo estos últimos instancias del problema universal planteado, pero con valores o muestras de evaluación menores. En este taller, plantearemos un problema (sección \ref{problema}) el cual puede ser resuelto por medio de este método de resolución de problemas, y además veremos la definición formal de algoritmos que podría resolver el mismo (sección \ref{algoritmos}).
+
+\section{Definición del problema} \label{problema}
+\justify El problema que se nos plantea es el siguiente: \hfill \break \break
+\centering ``A partir de un número natural, calcular su representación binaria inversa" \break
+\flushleft \justify Esto a grandes rasgos puede definir el problema así:
+\begin{enumerate}
+    \item Un numero $l\in\mathbb{N}$ el cual será el que se evalúa para convertir en binario inverso.
+    \item Una secuencia $S$ cuyo cardinal $|S|=n$ y con elementos $s_1,s_2,...,s_n$ cuyos elementos $s_i\in\mathbb{N}$ y que además, es una representación binaria del número $l$.
+    \item Cualquier número $s_i = \begin{cases} 
+        0 \\
+        1
+    \end{cases}$
+\end{enumerate}
+
+Como resultado, se espera obtener una secuencia inversa $S^{-1}$, donde sus elementos se ordenan así: $s_n, s_{n-1},...,s_2,s_1$, siendo la representación binaria inversa.
+\section{Algoritmos de para solucionar el problema} \label{algoritmos}
+A continuación, se definen dos algoritmos que permiten realizar la respectiva resolución del problema, uno de forma iterativa y otro, de usando la técnica de "divide y vencerás". Es por eso, que asumiremos que existe una función $toBinary(x)$ que recibe como parámetro un valor $x \in\mathbb{N}$ y retorna una secuencia $S$ con las características planteadas más arriba en la sección \ref{problema}.
+\subsection{Algoritmo Iterativo} \label{iterativo}
+La idea de este algoritmo es realizar iterativamente la solución del problema.
+\begin{algorithm}[!htb]
+\caption{Algoritmo Iterativo - Binario Inverso.}
+\begin{algorithmic}[1]
+\Require $S={s_1,s_2,...,s_n}$
+\Ensure $S$ será cambiado por $S^{-1} ={s_n,s_{n-1},...,s_2,s_1}$
+\Procedure{InvertBinaryIterative}{$l$}
+\State $S \leftarrow toBinary(l)$
+\State $S^{-1} \leftarrow \{\emptyset\}$
+  \For{$i \leftarrow|S|~\mathbf{to}~1$}
+    \State Append$~s_i~\mathbf{to}~S^{-1}$
+  \EndFor
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\subsubsection{Análisis de complejidad} \label{algoritmos:iterativo:analisis}
+
+Por inspección de código: hay un ciclo {\it para-todo} que, en el peor de los casos, recorren todo la secuencia de datos; entonces, este algoritmo es $O(|S|)$.
+
+\subsubsection{Invariante} \label{algoritmos:iterativo:invariante}
+Después de cada iteración controlada por el contador $i$, los elementos de $S$ quedan en $S^{-1}$ ordenados así: $S^{-1}_{n-i} = S_{i}$.
+\subsection{Algoritmo Divide y vencerás} \label{divide}
+La idea de este algoritmo es realizar con el método de divide y vencerás, la solución del problema.
+\begin{algorithm}[!htb]
+    \caption{Algoritmo Divide y vencerás - Binario Inverso.}
+\begin{algorithmic}[1]
+\Require $S={s_1,s_2,...,s_n}$
+\Ensure $S$ será cambiado por $S^{-1} ={s_n,s_{n-1},...,s_2,s_1}$
+\Procedure{InvertBinaryDivide}{$l$}
+\State $S \leftarrow toBinary(l)$
+\State $S^{-1} \leftarrow \{\emptyset\}$
+\If{$|S| = 1$}
+    \State Append$~S~\mathbf{to}~S^{-1}$
+\EndIf
+\If{$|S| > 1$}
+    \State Append$~InvertSubBinary(S,1,|S|)~\mathbf{to}~S^{-1}$
+\EndIf
+\State Return $S^{-1}$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm} \newpage
+
+\begin{algorithm}[!htb]
+    \caption{Algoritmo Invertir Subconjunto Binario - Binario Inverso.}
+\begin{algorithmic}[1]
+\Require $S={s_1,s_2,...,s_n}$ \and $b$ el cual es la posición inicial y un $e$ que es la posición final.
+\Ensure $invert$ que es un conjunto de números con el valor inverso de una secuencia binaria $S$
+\Procedure{InvertSubBinary}{$S,b,e$}
+    \State invert $\leftarrow \{\emptyset\}$
+    \If{b=e}
+        \State Append$~S_b~\mathbf{to}~invert$
+        \State Return $invert$
+    \EndIf
+    \State $q~\leftarrow~(b+e)/2$
+    \State Append$~InvertSubBinary(S,q,e)~\mathbf{to}~invert$
+    \State Append$~InvertSubBinary(S,b,q-1)~\mathbf{to}~invert$
+    \State Return $invert$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+\end{document}
